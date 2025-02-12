@@ -1,0 +1,19 @@
+{
+  "name": "Fullstack app: FlowBoard",
+  "version": "1.0.0",
+  "devDependencies": {
+    "@commitlint/cli": "^19.7.1",
+    "@commitlint/config-conventional": "^19.7.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3"
+  },
+  "lint-staged": {
+    "frontend-flowboard/**/*.{ts,tsx,vue}": [
+      "cd frontend-flowboard && npx eslint --fix",
+      "cd frontend-flowboard && npx prettier --write"
+    ],
+    "backend-flowboard/**/*.rb": [
+      "cd backend-flowboard && bundle exec rubocop -A"
+    ]
+  }
+}
