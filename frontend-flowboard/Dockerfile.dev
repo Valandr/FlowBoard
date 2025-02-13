@@ -3,6 +3,8 @@ FROM node:21
 WORKDIR /app
 
 COPY package.json package-lock.json ./
+COPY postcss.config.js .
+
 RUN npm install
 
 COPY . .
@@ -10,3 +12,6 @@ COPY . .
 EXPOSE 5173
 
 CMD ["npm", "run", "dev", "--", "--host"]
+
+
+
