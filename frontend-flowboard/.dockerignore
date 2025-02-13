@@ -1,6 +1,12 @@
 node_modules
 log
 tmp
+dist
+.vite
+.cache
+.eslintcache
 storage
 coverage
+.env
+.git
 .env*

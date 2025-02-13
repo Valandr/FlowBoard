@@ -1,0 +1,46 @@
+# syntax=docker/dockerfile:1
+# check=error=true
+
+# Base image correspondant à la version Ruby du projet
+ARG RUBY_VERSION=3.3.7
+FROM docker.io/library/ruby:$RUBY_VERSION AS base
+
+# Définition du répertoire de travail
+WORKDIR /rails
+
+# Installer les dépendances système (libpq, Node.js, Yarn)
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+    build-essential \
+    curl \
+    git \
+    libpq-dev \
+    nodejs \
+    yarn \
+    postgresql-client && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# Définition de l'environnement de développement
+ENV RAILS_ENV="development" \
+    BUNDLE_PATH="/usr/local/bundle" \
+    BUNDLE_WITHOUT="production" \
+    BOOTSNAP_CACHE_DIR="/usr/local/bundle/_bootsnap"
+
+# Copier uniquement le Gemfile et Gemfile.lock pour éviter de tout reconstruire à chaque changement
+COPY Gemfile Gemfile.lock ./
+
+# Installer les gems en mode développement
+RUN bundle install && \
+    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache
+
+# Copier tout le code source de l’application (sauf les fichiers ignorés par .dockerignore)
+COPY . .
+
+# Assurer que les fichiers de logs et tmp existent
+RUN mkdir -p log tmp storage && chmod -R 777 log tmp storage
+
+# Exposer le port par défaut de Rails en développement
+EXPOSE 3000
+
+# Commande par défaut : Démarrer le serveur Rails en mode développement
+CMD ["bin/rails", "server", "-b", "0.0.0.0"]

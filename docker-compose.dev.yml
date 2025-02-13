@@ -1,0 +1,62 @@
+services:
+  db:
+    image: postgres:15
+    container_name: db
+    restart: always
+    env_file:
+      - ./.env.dev
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+
+  backend:
+    build:
+      context: ./api-flowboard
+      dockerfile: Dockerfile.dev
+    container_name: backend
+    restart: always
+    depends_on:
+      - db
+    env_file:
+      - ./.env.dev
+    environment:
+      RAILS_ENV: development
+      SECRET_KEY_BASE: dev_secret_key
+      DATABASE_URL: 'postgresql://myuser:mypassword@db:5432/mydatabase'
+    volumes:
+      - ./api-flowboard:/rails
+    ports:
+      - '3000:3000'
+    command:
+      [
+        'sh',
+        '-c',
+        'rm -f /rails/tmp/pids/server.pid && bin/rails server -b 0.0.0.0',
+      ]
+
+  frontend:
+    build:
+      context: ./frontend-flowboard
+      dockerfile: Dockerfile.dev
+    container_name: frontend
+    restart: always
+    depends_on:
+      - backend
+    env_file:
+      - ./.env.dev
+    environment:
+      - VITE_API_BASE_URL=http://localhost:3000
+    volumes:
+      - ./frontend-flowboard:/app
+      - /app/node_modules
+    ports:
+      - '5173:5173'
+    command: ['npm', 'run', 'dev', '--', '--host']
+
+volumes:
+  pg_data:
