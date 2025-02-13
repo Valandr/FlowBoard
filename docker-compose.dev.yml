@@ -3,8 +3,6 @@ services:
     image: postgres:15
     container_name: db
     restart: always
-    env_file:
-      - ./.env.dev
     environment:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
@@ -22,8 +20,6 @@ services:
     restart: always
     depends_on:
       - db
-    env_file:
-      - ./.env.dev
     environment:
       RAILS_ENV: development
       SECRET_KEY_BASE: dev_secret_key
@@ -47,8 +43,6 @@ services:
     restart: always
     depends_on:
       - backend
-    env_file:
-      - ./.env.dev
     environment:
       - VITE_API_BASE_URL=http://localhost:3000
     volumes:
