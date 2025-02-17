@@ -43,4 +43,5 @@ RUN mkdir -p log tmp storage && chmod -R 777 log tmp storage
 EXPOSE 3000
 
 # Commande par défaut : Démarrer le serveur Rails en mode développement
-CMD ["bin/rails", "server", "-b", "0.0.0.0"]
+CMD ["bash", "-c", "bin/rails db:prepare && bin/rails server -b 0.0.0.0"]
+
